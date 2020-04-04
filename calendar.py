@@ -6,14 +6,11 @@ import timeblock
 
 class Calendar:
     def __init__(self):
-        self.calendar_list = []
+        self.events = []
         self.start_time = datetime.datetime.now()
         self.end_time = datetime.datetime.now()
         self.block_duration = 25
         self.categories = {}
-
-    def add_event(self, segment, day: str):
-        self.days[day].append(segment)
 
     def set_time_range(self, start, end):
         self.start_time = start
@@ -82,13 +79,15 @@ class Calendar:
                 if time_spent < time_daily and i != n_days+1:
                     seg.set_time_range(time_ptr)
                     time_ptr += datetime.timedelta(minutes=seg.duration)
-                    self.calendar_list.append(seg)
+                    self.events.append(seg)
                     cnt += 1
                     if cnt % 3 == 0:
                         tb = timeblock.TimeBlock("Long Break", 30)
+                        seg.set_time_range(time_ptr)
                         time_ptr += datetime.timedelta(minutes=30)
-                        self.calendar_list.append(tb)
+                        self.events.append(tb)
                     else:
                         tb = timeblock.TimeBlock("Short Break")
+                        seg.set_time_range(time_ptr)
                         time_ptr += datetime.timedelta(minutes=5)
-                        self.calendar_list.append(tb)
+                        self.events.append(tb)
