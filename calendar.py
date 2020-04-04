@@ -2,19 +2,30 @@ import category
 import datetime
 import topic
 import timeblock
+##############
+from __future__ import print_function
+from apiclient import discovery
+from httplib2 import Http
+from oauth2client import file, client, tools
 
+SCOPES = 'https://www.googleapis.com/auth/calendar'
+store = file.Storage('storage.json')
+creds = store.get()
+if not creds or creds.invalid:
+    flow = client.flow_from_clientsecrets('client_secret.json', SCOPES)
+    creds = tools.run_flow(flow, store)
+GCAL = discovery.build('calendar', 'v3', http=creds.authorize(Http()))
+
+GMT_OFF = "+01:00"
+###############
 
 class Calendar:
     def __init__(self):
-        self.days = {"monday": [], "tuesday": [], "wednesday": [], "thursday": [], "friday": [],
-                     "saturday": [], "sunday": []}
+        self.events = []
         self.start_time = datetime.datetime.now()
         self.end_time = datetime.datetime.now()
         self.block_duration = 25
         self.categories = {}
-
-    def add_event(self, segment, day: str):
-        self.days[day].append(segment)
 
     def set_time_range(self, start, end):
         self.start_time = start
@@ -30,6 +41,13 @@ class Calendar:
         time = tpc.time_spent
         if time > self.block_duration:
             return time / self.block_duration
+        else:
+            return 1
+
+    def get_daily_division_coefficient(self, n_days):
+        learning_time = sum(self.categories.values())
+        time_daily = round(learning_time / n_days, 2)
+        return time_daily
 
     @staticmethod
     def create_time_block(duration, c: category.Category, t=None):
@@ -52,7 +70,7 @@ class Calendar:
                 div_coef -= div_coef
         return small_segment
 
-    def create_segment(self, date_now):
+    def create_segment(self):
         segment = []
         for c, duration in self.categories:
             topics = c.get_topics(duration)
@@ -61,3 +79,39 @@ class Calendar:
                 small_segment = self.divide_topic(c, t, coef)
                 segment.extend(small_segment)
         return segment
+
+    def create(self, n_days):
+        segment = self.create_segment()
+        time_daily = self.get_daily_division_coefficient(n_days)
+        today = self.start_time
+        cnt = 0
+        for i in range(0, n_days):
+            time_spent = 0
+            today += datetime.timedelta(days=i)
+            time_ptr = today
+            for seg in segment:
+                time_spent += seg.duration
+                if time_spent < time_daily and i != n_days+1:
+                    seg.set_time_range(time_ptr)
+                    time_ptr += datetime.timedelta(minutes=seg.duration)
+                    self.events.append(seg)
+                    cnt += 1
+                    if cnt % 3 == 0:
+                        tb = timeblock.TimeBlock("Long Break", 30)
+                        seg.set_time_range(time_ptr)
+                        time_ptr += datetime.timedelta(minutes=30)
+                        self.events.append(tb)
+                    else:
+                        tb = timeblock.TimeBlock("Short Break")
+                        seg.set_time_range(time_ptr)
+                        time_ptr += datetime.timedelta(minutes=5)
+                        self.events.append(tb)
+
+    def add_to_google(self):
+        for event in self.events:
+            EVENT = event.to_google_calendar()
+            e = GCAL.events().insert(calendarId='primary', sendNotifications=True, body=EVENT).execute()
+            print('''*** %r event added:
+            Start: %s
+            End:   %s''' % (e['summary'].encode('utf-8'),
+                e['start']['dateTime'], e['end']['dateTime']))

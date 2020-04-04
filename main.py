@@ -9,5 +9,5 @@ if __name__ == '__main__':
     view = MVC.DemoView()
     controller = MVC.DemoController(model, view)
     view.add_controller(controller)
-    
+
     view.launch('data.json')
