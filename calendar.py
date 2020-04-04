@@ -1,12 +1,18 @@
-import category
-import datetime
-import topic
-import timeblock
 ##############
+
 from __future__ import print_function
 from apiclient import discovery
 from httplib2 import Http
 from oauth2client import file, client, tools
+
+##############
+
+import category
+import datetime
+import topic
+import timeblock
+
+##############
 
 SCOPES = 'https://www.googleapis.com/auth/calendar'
 store = file.Storage('storage.json')
