@@ -108,3 +108,4 @@ class Calendar:
     def add_to_google(self):
         for event in self.events:
             EVENT = event.to_google_calendar()
+            e = GCAL.events().insert(calendarId='primary', sendNotifications=True, body=EVENT).execute()
