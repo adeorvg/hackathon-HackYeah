@@ -22,8 +22,8 @@ import datetime
 class Calendar:
     def __init__(self):
         self.events = []
-        self.start_time = datetime.datetime.now()
-        self.end_time = datetime.datetime.now()
+        self.start_time = datetime.datetime.now().replace(hour=12, minute=00)
+        self.end_time = datetime.datetime.now().replace(hour=18, minute=00)
         self.block_duration = 25
         self.categories = {}
 
@@ -91,14 +91,15 @@ class Calendar:
         segment = self.create_segment()
 
         time_daily = self.get_daily_division_coefficient(n_days)
-        today = datetime.datetime.strptime('2020-04-05 12:00', "%Y-%m-%d %H:%M")
+        today = self.start_time
+
         cnt = 0
 
         time_ptr = today
         time_spent = 0
         for seg in segment:
             time_spent += seg.duration
-            if time_spent < time_daily:
+            if time_spent < time_daily and (time_ptr + datetime.timedelta(minutes=seg.duration)).hour < self.end_time.hour:
                 seg.set_time_range(time_ptr)
                 time_ptr += datetime.timedelta(minutes=seg.duration)
                 self.events.append(seg)
@@ -123,7 +124,7 @@ class Calendar:
     def add_to_google(self):
         for event in self.events:
             EVENT = event.to_google_calendar()
-            e = GCAL.events().insert(calendarId='p6dddltdi1s7b6skh0o4ccnar0@group.calendar.google.com', sendNotifications=True, body=EVENT).execute()
+            e = GCAL.events().insert(calendarId='pm1i5rmh6ifrjm9fl4pptvkngs@group.calendar.google.com', sendNotifications=True, body=EVENT).execute()
             print('''*** %r event added:
             Start: %s
             End:   %s''' % (e['summary'].encode('utf-8'),

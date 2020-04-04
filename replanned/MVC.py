@@ -46,8 +46,8 @@ class DemoView(View):
         self.controller.read_categories_and_topics(file)
         
         new_calendar = calendar.Calendar()
-        
-        new_calendar.set_time_range(new_calendar.start_time, new_calendar.start_time + datetime.timedelta(days=1))
+
+        new_calendar.set_time_range(new_calendar.start_time, new_calendar.start_time + datetime.timedelta(hours=8))
         categories = self.controller.get_categories()
         times = [180, 270]
         for new_category, time in zip(categories, times):
