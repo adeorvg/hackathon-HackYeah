@@ -3,7 +3,7 @@ import datetime
 
 
 class Category:
-    def __init__(self, name: str, ):
+    def __init__(self, name: str):
         self.name = name
         self.topics = []
         self.last_done = datetime.datetime.now()
