@@ -12,18 +12,15 @@ if not creds or creds.invalid:
 GCAL = discovery.build('calendar', 'v3', http=creds.authorize(Http()))
 
 GMT_OFF = '+01:00'      # PDT/MST/GMT+1
-EVENT = event.to_google_calendar()
-"""
-{
-    'summary': 'Dinner with friends',
-    'start':  {'dateTime': '2020-04-15T15:00:00%s' % GMT_OFF},
-    'end':    {'dateTime': '2020-04-15T17:00:00%s' % GMT_OFF},
-    'attendees': [
-        {'email': 'friend1@example.com'},
-        {'email': 'friend2@example.com'},
-    ],
-}
-"""
+EVENT = {
+            'summary': 'Dinner with friends',
+            'start':  {'dateTime': '2020-04-15T15:00:00%s' % GMT_OFF},
+            'end':    {'dateTime': '2020-04-15T17:00:00%s' % GMT_OFF},
+            'attendees': [
+                {'email': 'friend1@example.com'},
+                {'email': 'friend2@example.com'},
+            ],
+        }
 
 e = GCAL.events().insert(calendarId='primary',
         sendNotifications=True, body=EVENT).execute()

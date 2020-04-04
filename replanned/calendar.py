@@ -12,10 +12,12 @@ if not creds or creds.invalid:
     creds = tools.run_flow(flow, store)
 GCAL = discovery.build('calendar', 'v3', http=creds.authorize(Http()))
 
+
 from . import category
 from . import topic
 from . import timeblock
 import datetime
+
 
 class Calendar:
     def __init__(self):
@@ -48,11 +50,17 @@ class Calendar:
         return time_daily
 
     @staticmethod
-    def create_time_block(duration, c: category.Category, t=None):
-        if t:
-            name = c.name + ' / ' + t.name
+    def create_time_block(duration, c: category.Category, t=None, info=None):
+        if info:
+            if t:
+                name = info + c.name + ' / ' + t.name
+            else:
+                name = info + c.name
         else:
-            name = c.name
+            if t:
+                name = c.name + ' / ' + t.name
+            else:
+                name = c.name
         return timeblock.TimeBlock(name, duration)
 
     def divide_topic(self, c: category.Category, t: topic.Topic, div_coef):
@@ -60,11 +68,11 @@ class Calendar:
         small_segment = []
         while div_coef > 0:
             if div_coef >= 1:
-                tb = self.create_time_block(t.time_spent, c, t)
+                tb = self.create_time_block(self.block_duration, c, t)
                 small_segment.append(tb)
                 div_coef -= 1
             else:
-                tb = self.create_time_block(t.time_spent * div_coef, c, t)
+                tb = self.create_time_block(self.block_duration * div_coef, c, t, "!SHORT! ")
                 small_segment.append(tb)
                 div_coef -= div_coef
         return small_segment
@@ -83,34 +91,39 @@ class Calendar:
         segment = self.create_segment()
 
         time_daily = self.get_daily_division_coefficient(n_days)
-        today = self.start_time
+        today = datetime.datetime.strptime('2020-04-05 12:00', "%Y-%m-%d %H:%M")
         cnt = 0
-        for i in range(0, n_days):
-            time_ptr = today
-            time_spent = 0
-            today += datetime.timedelta(days=i)
-            for seg in segment:
-                time_spent += seg.duration
-                if time_spent < time_daily and i != n_days+1:
-                    seg.set_time_range(time_ptr)
-                    time_ptr += datetime.timedelta(minutes=seg.duration)
-                    self.events.append(seg)
-                    cnt += 1
+
+        time_ptr = today
+        time_spent = 0
+        for seg in segment:
+            time_spent += seg.duration
+            if time_spent < time_daily:
+                seg.set_time_range(time_ptr)
+                time_ptr += datetime.timedelta(minutes=seg.duration)
+                self.events.append(seg)
+                cnt += 1
+                if seg != segment[-1] and time_spent + self.block_duration < time_daily:
                     if cnt % 3 == 0:
                         tb = timeblock.TimeBlock("Long Break", 30)
-                        seg.set_time_range(time_ptr)
+                        tb.set_time_range(time_ptr)
                         time_ptr += datetime.timedelta(minutes=30)
                         self.events.append(tb)
                     else:
                         tb = timeblock.TimeBlock("Short Break")
-                        seg.set_time_range(time_ptr)
+                        tb.set_time_range(time_ptr)
                         time_ptr += datetime.timedelta(minutes=5)
                         self.events.append(tb)
+            else:
+                today += datetime.timedelta(days=1)
+                time_spent = 0
+                time_ptr = today
+                cnt = 0
 
     def add_to_google(self):
         for event in self.events:
             EVENT = event.to_google_calendar()
-            e = GCAL.events().insert(calendarId='primary', sendNotifications=True, body=EVENT).execute()
+            e = GCAL.events().insert(calendarId='p6dddltdi1s7b6skh0o4ccnar0@group.calendar.google.com', sendNotifications=True, body=EVENT).execute()
             print('''*** %r event added:
             Start: %s
             End:   %s''' % (e['summary'].encode('utf-8'),
