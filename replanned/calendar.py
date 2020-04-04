@@ -1,7 +1,3 @@
-import category
-import datetime
-import topic
-import timeblock
 ##############
 from __future__ import print_function
 from apiclient import discovery
@@ -18,6 +14,10 @@ GCAL = discovery.build('calendar', 'v3', http=creds.authorize(Http()))
 
 GMT_OFF = "+01:00"
 ###############
+from . import category
+from . import topic
+from . import timeblock
+import datetime
 
 class Calendar:
     def __init__(self):
@@ -36,7 +36,7 @@ class Calendar:
 
     def add_category(self, c: category.Category, time_to_spend: int):
         self.categories[c] = time_to_spend
-
+            
     def get_block_time_division_coefficient(self, tpc: topic.Topic):
         time = tpc.time_spent
         if time > self.block_duration:
@@ -58,6 +58,7 @@ class Calendar:
         return timeblock.TimeBlock(name, duration)
 
     def divide_topic(self, c: category.Category, t: topic.Topic, div_coef):
+        
         small_segment = []
         while div_coef > 0:
             if div_coef >= 1:
@@ -72,7 +73,7 @@ class Calendar:
 
     def create_segment(self):
         segment = []
-        for c, duration in self.categories:
+        for c, duration in zip(self.categories.keys(), self.categories.values()):
             topics = c.get_topics(duration)
             for t in topics:
                 coef = self.get_block_time_division_coefficient(t)
@@ -82,13 +83,14 @@ class Calendar:
 
     def create(self, n_days):
         segment = self.create_segment()
+
         time_daily = self.get_daily_division_coefficient(n_days)
         today = self.start_time
         cnt = 0
         for i in range(0, n_days):
+            time_ptr = today
             time_spent = 0
             today += datetime.timedelta(days=i)
-            time_ptr = today
             for seg in segment:
                 time_spent += seg.duration
                 if time_spent < time_daily and i != n_days+1:

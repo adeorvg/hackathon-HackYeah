@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 import json
-import user
-import category
-import topic
+import datetime
+from . import user
+from . import category
+from . import topic
+from . import calendar
 
 class View(ABC):
     
@@ -43,10 +45,18 @@ class DemoView(View):
     def launch(self, file):
         self.controller.read_categories_and_topics(file)
         
-        '''
-        for cat in self.controller.model.categories:
-            print(cat.name)
-        '''
+        new_calendar = calendar.Calendar()
+        
+        new_calendar.set_time_range(new_calendar.start_time, new_calendar.start_time + datetime.timedelta(days=1))
+        categories = self.controller.get_categories()
+        times = [180, 270]
+        for new_category, time in zip(categories, times):
+            new_calendar.add_category(new_category, time)
+        new_calendar.create(n_days=5)
+        
+        self.controller.set_calendar(new_calendar)
+        self.controller.send_calendar()
+        
     
 class Model:
     
@@ -110,8 +120,14 @@ class DemoController(Controller):
             
         return category.Category(name)
     
+    def get_categories(self):
+        return self.model.categories
+    
     def set_calendar(self, calendar):
         self.model.calendar = calendar
+        
+    def add_category_to_calendar(self, new_category, time_to_spend):
+        self.model.calendar.add_category(new_category)
         
     def send_calendar(self):
         self.model.calendar.add_to_google()

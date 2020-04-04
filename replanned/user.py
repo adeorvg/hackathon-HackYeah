@@ -1,6 +1,6 @@
 import calendar
 from datetime import datetime
-import category
+from . import category
 
 
 class User:

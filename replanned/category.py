@@ -1,6 +1,6 @@
-import topic
+from . import topic
+from . import timeblock
 import datetime
-import timeblock
 
 
 class Category:
@@ -18,10 +18,12 @@ class Category:
 
     def get_topics(self, time_to_spend: int):
         topics = []
+        
         for t in self.topics:
             if t.is_after_spaced_time():
                 # set the five minute range to fit the topic
                 if t.time_spent <= (time_to_spend + 5):
                     time_to_spend -= t.time_spent
-                    topics.append(topic)
+                    topics.append(t)
+        
         return topics

@@ -1,5 +1,6 @@
 import datetime
 
+GMT_OFF = "+02:00"
 
 class TimeBlock:
     def __init__(self, name: str, duration=5):

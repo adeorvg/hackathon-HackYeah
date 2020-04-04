@@ -1,7 +1,7 @@
 import json
 
-data = {'Analiza Matematyczna': {'Całki Oznaczone': (120, 0), 'Rachunek Różniczkowy': (150, 1)},
-        'Podstawy Informatyki': {'Maszyna Turinga': (60, 0), 'Synchronizacja Wątków': (150, 1)}}
+data = {'Analiza Matematyczna': {'Całki Oznaczone': (0, 120), 'Rachunek Różniczkowy': (1, 150)},
+        'Podstawy Informatyki': {'Maszyna Turinga': (0, 60), 'Synchronizacja Wątków': (1, 150)}}
 
 with open('data.json', 'w') as fp:
     json.dump(data, fp)

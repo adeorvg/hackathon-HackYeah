@@ -1,5 +1,6 @@
-import user
-import MVC
+from replanned import user
+from replanned import category
+from replanned import MVC
 
 if __name__ == '__main__':
     
