@@ -91,3 +91,7 @@ class Calendar:
                         seg.set_time_range(time_ptr)
                         time_ptr += datetime.timedelta(minutes=5)
                         self.events.append(tb)
+
+    def add_to_google(self):
+        for event in self.events:
+            EVENT = event.to_google_calendar()
