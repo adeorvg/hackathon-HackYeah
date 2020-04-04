@@ -6,8 +6,7 @@ import timeblock
 
 class Calendar:
     def __init__(self):
-        self.days = {"monday": [], "tuesday": [], "wednesday": [], "thursday": [], "friday": [],
-                     "saturday": [], "sunday": []}
+        self.calendar_list = []
         self.start_time = datetime.datetime.now()
         self.end_time = datetime.datetime.now()
         self.block_duration = 25
@@ -30,6 +29,13 @@ class Calendar:
         time = tpc.time_spent
         if time > self.block_duration:
             return time / self.block_duration
+        else:
+            return 1
+
+    def get_daily_division_coefficient(self, n_days):
+        learning_time = sum(self.categories.values())
+        time_daily = round(learning_time / n_days, 2)
+        return time_daily
 
     @staticmethod
     def create_time_block(duration, c: category.Category, t=None):
@@ -52,7 +58,7 @@ class Calendar:
                 div_coef -= div_coef
         return small_segment
 
-    def create_segment(self, date_now):
+    def create_segment(self):
         segment = []
         for c, duration in self.categories:
             topics = c.get_topics(duration)
@@ -61,3 +67,28 @@ class Calendar:
                 small_segment = self.divide_topic(c, t, coef)
                 segment.extend(small_segment)
         return segment
+
+    def create(self, n_days):
+        segment = self.create_segment()
+        time_daily = self.get_daily_division_coefficient(n_days)
+        today = self.start_time
+        cnt = 0
+        for i in range(0, n_days):
+            time_spent = 0
+            today += datetime.timedelta(days=i)
+            time_ptr = today
+            for seg in segment:
+                time_spent += seg.duration
+                if time_spent < time_daily and i != n_days+1:
+                    seg.set_time_range(time_ptr)
+                    time_ptr += datetime.timedelta(minutes=seg.duration)
+                    self.calendar_list.append(seg)
+                    cnt += 1
+                    if cnt % 3 == 0:
+                        tb = timeblock.TimeBlock("Long Break", 30)
+                        time_ptr += datetime.timedelta(minutes=30)
+                        self.calendar_list.append(tb)
+                    else:
+                        tb = timeblock.TimeBlock("Short Break")
+                        time_ptr += datetime.timedelta(minutes=5)
+                        self.calendar_list.append(tb)
