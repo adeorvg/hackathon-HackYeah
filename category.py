@@ -10,7 +10,7 @@ class Category:
         self.last_done = datetime.datetime.now()
 
     def sort_by_last_done(self):
-        self.topics = sorted(self.topics, reverse=True)
+        self.topics.sort(key=lambda x: x.last_done, reverse=True)
 
     def add_topic(self, tpc: topic.Topic):
         self.topics.append(tpc)
