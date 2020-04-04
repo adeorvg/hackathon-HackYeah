@@ -20,3 +20,11 @@ class Topic:
 
     def update_last_done(self):
         self.last_done = datetime.datetime.now()
+
+    def update_spaced_rep_time(self, difficulty):
+        if difficulty == 1:
+            self.spaced_rep_time = (self.spaced_rep_time + 1.5)**2 + 3
+        elif difficulty == 2:
+            self.spaced_rep_time = (self.spaced_rep_time**1.5) + 2
+        else:
+            self.spaced_rep_time = 1
