@@ -1,24 +1,25 @@
 import calendar
 from datetime import datetime
+import category
+
 
 class User:
-    def __init__(self, name: str, start_time: datetime, end_time: datetime):
+    def __init__(self, name: str, ):
         self.name = name
         self.points = 0
         self.calendar = calendar
-        self.friendlist = []
-        
-        self.start_time = start_time
-        self.end_time = end_time
+        self.friend_list = []
 
     def update_points(self, pts: int):
         self.points += pts
         
     def add_to_friends(self, users):
         try:
-            self.friendlist.extend(users)
+            self.friend_list.extend(users)
         except TypeError:
-            self.friendlist.append(users)
+            self.friend_list.append(users)
+
+
 
 class Ranking:
     def __init__(self, users, sort=False):
