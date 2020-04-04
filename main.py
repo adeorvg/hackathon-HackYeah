@@ -32,7 +32,7 @@ if __name__ == '__main__':
     model.show_ranking()
     
     user1.add_to_friends(users)
-    ranking = user.Ranking(user1.friendlist)
+    ranking = user.Ranking(user1.friend_list)
     print('='*50)
     ranking.show()
     ranking.sort_users()
