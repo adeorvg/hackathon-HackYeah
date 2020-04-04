@@ -17,7 +17,7 @@ class TimeBlock:
         self.end_time = self.start_time + datetime.timedelta(minutes=self.duration)
 
     def to_google_calendar(self):
-        GMT_OFF = "-07:00"
+        GMT_OFF = "+01:00"
         return {
             "summary": self.name,
             "start": {"dateTime": (self.start_time.strftime("%Y-%m-%dT%H:%M:00") + "%s") % GMT_OFF},
