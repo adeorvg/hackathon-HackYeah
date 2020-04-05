@@ -1,6 +1,4 @@
 import calendar
-from datetime import datetime
-from . import category
 
 
 class User:
@@ -11,12 +9,24 @@ class User:
         self.friend_list = []
 
     def update_points(self, pts: int):
+        """
+        Update points of user
+
+        Parameters:
+        pts(int): new amount of points
+        """
         self.points += pts
         
     def add_friend(self, user):
         self.friend_list.append(user)
             
     def show_friends_ranking(self, sort=True):
+        """
+        Show your place and points among other friends
+
+        Parameters:
+        sort(boolean): alphanumeric sorting
+        """
         users = self.friend_list.copy()
         current_user = User('YOU')
         current_user.update_points(self.points)
