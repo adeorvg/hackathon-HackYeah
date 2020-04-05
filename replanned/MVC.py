@@ -49,7 +49,7 @@ class DemoView(View):
 
         new_calendar.set_time_range(new_calendar.start_time, new_calendar.start_time + datetime.timedelta(hours=8))
         categories = self.controller.get_categories()
-        times = [180, 270]
+        times = [300, 300]
         for new_category, time in zip(categories, times):
             new_calendar.add_category(new_category, time)
         new_calendar.create(n_days=5)

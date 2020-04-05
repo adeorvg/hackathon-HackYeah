@@ -125,7 +125,7 @@ class Calendar:
     def add_to_google(self):
         for event in self.events:
             EVENT = event.to_google_calendar()
-            e = GCAL.events().insert(calendarId='pm1i5rmh6ifrjm9fl4pptvkngs@group.calendar.google.com', sendNotifications=True, body=EVENT).execute()
+            e = GCAL.events().insert(calendarId='primary', sendNotifications=True, body=EVENT).execute()
             print('''*** %r event added:
             Start: %s
             End:   %s''' % (e['summary'].encode('utf-8'),
