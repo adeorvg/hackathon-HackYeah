@@ -120,7 +120,8 @@ class Calendar:
                 time_spent = 0
                 time_ptr = today
                 cnt = 0
-
+                
+#Ads an event to the google calendar
     def add_to_google(self):
         for event in self.events:
             EVENT = event.to_google_calendar()
