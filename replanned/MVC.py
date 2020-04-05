@@ -37,12 +37,14 @@ class DemoView(View):
     def send_callendar(self):
         # send to Google Calendar
         self.controller.send_callendar()
-        
-    def make_calendar(self):
-        n_days = input()
-        self.controller.make_calendar(n_days)
             
     def launch(self, file):
+        """
+        Launches a program that simulate user's inputs
+
+        Parameters:
+            file(str): name of the file from which categories and topics are being loaded
+        """
         self.controller.read_categories_and_topics(file)
         
         new_calendar = calendar.Calendar()
@@ -55,7 +57,7 @@ class DemoView(View):
         new_calendar.create(n_days=5)
         
         self.controller.set_calendar(new_calendar)
-        self.controller.send_calendar()
+        self.send_callendar()
         
     
 class Model:
@@ -99,6 +101,13 @@ class DemoController(Controller):
         Controller.__init__(self, model, view)
         
     def add_friend(self, u, sort=False):
+        """
+        Add friend for the current user.
+
+        Parameters:
+            u(user.User): reference for user that the current user wants to add to friends.
+            sort(bool): boolean that decides whether to sort the friend list by points or not.
+        """
         self.model.user.add_friend(u)
         self.model.ranking.add_user(u)
             
@@ -112,6 +121,13 @@ class DemoController(Controller):
         self.model.categories.append(category)
         
     def get_category(self, name):
+        """
+        Add category for the current user.
+
+        Parameters:
+            name(str): name of the category.
+        """
+        
         categories = self.model.categories
         
         for concrete_category in categories:
@@ -126,13 +142,23 @@ class DemoController(Controller):
     def set_calendar(self, calendar):
         self.model.calendar = calendar
         
-    def add_category_to_calendar(self, new_category, time_to_spend):
+    def add_category_to_calendar(self, new_category):
         self.model.calendar.add_category(new_category)
         
     def send_calendar(self):
         self.model.calendar.add_to_google()
         
+    def send_callendar(self):
+        # send to Google Calendar
+        self.model.calendar.add_to_google()
+        
     def read_categories_and_topics(self, file):
+        """
+        Read categories and topics from .json file.
+
+        Parameters:
+            file(str): name of the json file.
+        """
         with open(file, 'r') as fp:
             d = json.load(fp)
             
@@ -144,3 +170,4 @@ class DemoController(Controller):
                 new_category.add_topic(new_topic)
                 
             self.add_category(new_category)
+            
