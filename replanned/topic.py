@@ -10,6 +10,11 @@ class Topic:
         self.spaced_rep_time = spaced_rep_time
 
     def change_name(self, name):
+        """
+        Replaces curent name
+        Parameters:
+            name
+        """
         self.name = name
 
     def is_after_spaced_time(self):
